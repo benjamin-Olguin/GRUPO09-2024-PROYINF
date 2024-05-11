@@ -1,5 +1,5 @@
 <?php
-include 'db.php';
+include 'bd.php';
 
 $sql = "SELECT * FROM reservas";
 $result = $conn->query($sql);
@@ -12,4 +12,5 @@ if ($result->num_rows > 0) {
     echo "0 results";
 }
 $conn->close();
-?>
+
+ 

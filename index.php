@@ -1,51 +1,285 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Buscar Habitaciones Disponibles</title>
-</head>
-<body>
-    <h1>Buscar Habitaciones Disponibles</h1>
-    <form action="index.php" method="get">
-    <label for="tipo_habitacion">Tipo de habitación:</label>
-    <select id="tipo_habitacion" name="tipo_habitacion">
-        <option value="all" <?php if(isset($_GET['tipo_habitacion']) && $_GET['tipo_habitacion'] == 'all') echo 'selected'; ?>>Todos</option>
-        <option value="Single" <?php if(isset($_GET['tipo_habitacion']) && $_GET['tipo_habitacion'] == 'Single') echo 'selected'; ?>>Single</option>
-        <option value="Double" <?php if(isset($_GET['tipo_habitacion']) && $_GET['tipo_habitacion'] == 'Double') echo 'selected'; ?>>Double</option>
-        <option value="King" <?php if(isset($_GET['tipo_habitacion']) && $_GET['tipo_habitacion'] == 'King') echo 'selected'; ?>>King</option>
-        </select>
-        <button type="submit">Buscar habitaciones</button>
-    </form>
+<?php 
+error_reporting(0);
+require 'bd.php';
+require 'security.php';
 
-    <?php
-    include 'bd.php'; // Asegúrate de que este archivo contiene la conexión correcta a la base de datos
+$error_message = "";
+if(!empty($_POST['submit'])){
+    $submit_action = $_POST['submit'];
+    
+    $Rut                = trim($_POST["Rut"]);
+    $Numero_habitacion  = trim($_POST["Numero_habitacion"]);
+    if($submit_action == 'Realizar Reserva'){
+        $Fecha_Checkin      = trim($_POST["Fecha_Checkin"]);
+        $Fecha_CheckOut     = trim($_POST["Fecha_CheckOut"]);
 
-    // Obtener el tipo de habitación del formulario si está seteado, de lo contrario usar 'all'
-    $tipo_habitacion = isset($_GET['tipo_habitacion']) ? $_GET['tipo_habitacion'] : 'all';
+        if(isset($_POST["Rut"], $_POST["Numero_habitacion"],
+        $_POST["Fecha_Checkin"], $_POST["Fecha_CheckOut"])){
 
-    // Preparar la consulta SQL para buscar habitaciones disponibles
-    $sql = "SELECT * FROM Habitaciones WHERE estado = 0";
-    if ($tipo_habitacion !== 'all') {
-        $sql .= " AND tipo_habitacion = '{$conn->real_escape_string($tipo_habitacion)}'";
-    }
+            // Verificar si la habitación ya está reservada
+            $habitacion_estado = verificarEstadoHabitacion($Numero_habitacion);
 
-    // Ejecutar la consulta
-    $result = $conn->query($sql);
-
-    // Checar si se obtuvieron resultados y mostrarlos
-    if ($result->num_rows > 0) {
-        echo "<h2>Habitaciones Disponibles:</h2>";
-        while ($row = $result->fetch_assoc()) {
-            echo "Número de Habitación: " . $row['Numero_habitacion'] .
-                 " - Tipo: " . $row['Tipo_habitacion'] .
-                 " - Precio por noche: $" . $row['Precio'] . "<br>";
+            if($habitacion_estado == 0) {
+                // Insertar nueva reserva en la base de datos
+                if(realizarReserva($Rut, $Numero_habitacion, $Fecha_Checkin, $Fecha_CheckOut)) {
+                    // Actualizar el estado de la habitación a reservada
+                    actualizarEstadoHabitacion($Numero_habitacion, 1);
+                    $success_message = "Reserva realizada con éxito.";
+                } else {
+                    $error_message = "Error al realizar la reserva.";
+                }
+            } else {
+                $error_message = "La habitación ya está reservada.";
+            }
         }
-    } else {
-        echo "No hay habitaciones disponibles.";
+    }
+    if($submit_action == 'Modificar Reserva'){
+        $Numero_habitacion_nueva    = trim($_POST["Numero_habitacion_nueva"]);
+        $Fecha_Checkin_nueva        = trim($_POST["Fecha_Checkin_nueva"]);
+        $Fecha_CheckOut_nueva       = trim($_POST["Fecha_CheckOut_nueva"]);
+
+        // Verificar si la habitación actual está reservada
+        $habitacion_estado_actual = verificarEstadoHabitacion($Numero_habitacion);
+
+        if($habitacion_estado_actual == 1) {
+            // Verificar si la habitación nueva está disponible
+            $habitacion_estado_nueva = verificarEstadoHabitacion($Numero_habitacion_nueva);
+
+            if($habitacion_estado_nueva == 0) {
+                // Actualizar la reserva con los nuevos datos
+                if(actualizarReserva($Rut, $Numero_habitacion, $Numero_habitacion_nueva, $Fecha_Checkin_nueva, $Fecha_CheckOut_nueva)) {
+                    // Éxito al actualizar la reserva
+                    actualizarEstadoHabitacion($Numero_habitacion, 0);
+                    actualizarEstadoHabitacion($Numero_habitacion_nueva, 1);
+                    $success_message_modificar_reserva = "Reserva modificada con éxito.";
+                } else {
+                    // Error al actualizar la reserva
+                    $error_message_modificar_reserva = "Error al modificar la reserva.";
+                }
+            } else {
+                // La habitación nueva ya está reservada
+                $error_message_modificar_reserva = "La habitación nueva ya está reservada.";
+            }
+        } else {
+            // La habitación actual no está reservada
+            $error_message_modificar_reserva = "La habitación actual no está reservada.";
+        }
     }
 
-    // Cerrar la conexión
-    $conn->close();
-    ?>
-</body>
+    if($submit_action === "Borrar Reserva") {
+        
+        // Verificar si la habitación está reservada
+        $habitacion_estado = verificarEstadoHabitacion($Numero_habitacion);
+
+        if($habitacion_estado == 1) {
+            // Borrar la reserva de la habitación
+            if(borrarReserva($Numero_habitacion)) {
+                // Actualizar el estado de la habitación a disponible
+                actualizarEstadoHabitacion($Numero_habitacion, 0);
+                $success_message_borrar_reserva = "Reserva borrada con éxito.";
+            } else {
+                $error_message_borrar_reserva = "Error al borrar la reserva.";
+            }
+        } else {
+            $error_message_borrar_reserva = "La habitación no está reservada.";
+        }
+    }
+}
+        
+$error_message1 = "";
+if(!empty($_GET['Numero_habitacion'])) {
+    $numero_habitacion = intval($_GET['Numero_habitacion']);
+    $stmt = $conn->prepare("SELECT * FROM Habitaciones WHERE Numero_habitacion = ?");
+    $stmt->bind_param("i", $numero_habitacion);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Verificamos si se encontró alguna habitación
+    if ($result->num_rows === 0) {
+        $error_message1 = "La habitación $numero_habitacion no existe.";
+    } else {
+        $habitacion = $result->fetch_assoc();
+    }
+        
+    
+    $stmt->close();
+}
+
+// Función para verificar el estado de la habitación (0: disponible, 1: reservada)
+function verificarEstadoHabitacion($Numero_habitacion) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT Estado FROM habitaciones WHERE Numero_habitacion = ?");
+    $stmt->bind_param("i", $Numero_habitacion);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $habitacion_estado = $result->fetch_assoc()['Estado'];
+    return $habitacion_estado;
+}
+
+// Función para realizar una nueva reserva
+function realizarReserva($Rut, $Numero_habitacion, $Fecha_Checkin, $Fecha_CheckOut) {
+    global $conn;
+    $insert = $conn->prepare("INSERT INTO reservas (Rut, Numero_habitacion, Fecha_Checkin, Fecha_CheckOut) VALUES (?, ?, ?, ?)");
+    $insert->bind_param("iiss", $Rut, $Numero_habitacion, $Fecha_Checkin, $Fecha_CheckOut);
+    if($insert->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// Función para actualizar el estado de la habitación
+function actualizarEstadoHabitacion($Numero_habitacion, $estado) {
+    global $conn;
+    $update = $conn->prepare("UPDATE habitaciones SET Estado = ? WHERE Numero_habitacion = ?");
+    $update->bind_param("ii", $estado, $Numero_habitacion);
+    $update->execute();
+}
+
+// Función para actualizar una reserva existente
+function actualizarReserva($Rut, $Numero_habitacion_actual, $Numero_habitacion_nueva, $Fecha_Checkin_nueva, $Fecha_CheckOut_nueva) {
+    global $conn;
+    $update = $conn->prepare("UPDATE reservas SET Rut = ?, Numero_habitacion = ?, Fecha_Checkin = ?, Fecha_CheckOut = ? WHERE Numero_habitacion = ?");
+    $update->bind_param("iissi", $Rut, $Numero_habitacion_nueva, $Fecha_Checkin_nueva, $Fecha_CheckOut_nueva, $Numero_habitacion_actual);
+    if($update->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function borrarReserva($Numero_habitacion) {
+    global $conn;
+    $delete = $conn->prepare("DELETE FROM reservas WHERE Numero_habitacion = ?");
+    $delete->bind_param("i", $Numero_habitacion);
+    if($delete->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+?>
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Reservas de Habitaciones</title>
+    </head>
+    <body>
+        <h1>Reservas de Habitaciones</h1>
+
+        <!-- Formulario busqueda de habitaciones por numero -->
+        <form action="" method="get">
+            <div>
+                <label for="Numero_habitacion">Consultar Habitación Número: </label>
+                <input type="number" name="Numero_habitacion", id="Numero_habitacion", autocomplete="off">
+            </div>
+            <input type="submit" value="Buscar">
+        </form>
+
+        <!-- Mostrar mensaje de error si la habitación no existe -->
+        <?php if($error_message1 !== ""): ?>
+            <p><?php echo $error_message1; ?></p>
+        <?php endif; ?>
+        
+
+        <hr>
+        <!-- Resultados de la Habitacion si existe -->
+        
+        <?php if(isset($habitacion)){  ?>
+        <h2>Detalles de la Habitación <?php echo $habitacion['Numero_habitacion']; ?></h2>
+        <p>Tipo de Habitación: <?php echo $habitacion['Tipo_habitacion']; ?></p>
+        <p>Precio: <?php echo $habitacion['Precio']; ?></p>
+        <p>Estado: <?php if($habitacion['Estado']) {
+                echo "Reservada"; } else { echo "Disponible"; } ?></p>
+        <!-- Agrega aquí más atributos de la habitación según tu esquema de base de datos -->
+        <?php } ?>
+         
+        <hr>
+        
+        <h2>Reserva de Habitación</h2>
+        <!-- Formulario reserva de habitacion -->
+        <form action="" method="post">
+            <div class="field">
+                <label for="Rut">Rut</label>
+                <input type="number" name="Rut", id="Rut", autocomplete="off">
+            </div>
+            <div class="field">
+                <label for="Numero_habitacion">Habitación</label>
+                <input type="number" name="Numero_habitacion", id="Numero_habitacion", autocomplete="off">
+            </div>
+            <div class="field">
+                <label for="Fecha_Checkin">Fecha Check-In</label>
+                <input type="date" name="Fecha_Checkin", id="Fecha_Checkin", autocomplete="off">
+            </div>
+            <div class="field">
+                <label for="Fecha_CheckOut">Fecha Check-Out</label>
+                <input type="date" name="Fecha_CheckOut", id="Fecha_CheckOut", autocomplete="off">
+            </div>
+            <!-- Botón para realizar una nueva reserva -->
+            <input type="submit" name="submit" value="Realizar Reserva">
+        <!-- Mostrar mensaje de error si la habitación ya esta reservada -->
+        <?php if($error_message !== ""): ?>
+            <p><?php echo $error_message; ?></p>
+        <?php endif; ?>
+
+        <hr>
+        <h2> Modificar Reserva de Habitación</h2>
+        <!-- Formulario modificar reserva de habitacion -->
+        <form action="" method="post">
+            <div class="field">
+                <label for="Rut">Rut</label>
+                <input type="number" name="Rut", id="Rut", autocomplete="off">
+            </div>
+            <div class="field">
+                <label for="Numero_habitacion">Habitación Reservada</label>
+                <input type="number" name="Numero_habitacion", id="Numero_habitacion", autocomplete="off">
+            </div>
+            <div class="field">
+                <label for="Numero_habitacion_nueva">Habitación Nueva</label>
+                <input type="number" name="Numero_habitacion_nueva", id="Numero_habitacion_nueva", autocomplete="off">
+            </div>
+            <div class="field">
+                <label for="Fecha_Checkin">Fecha Check-In Nueva</label>
+                <input type="date" name="Fecha_Checkin", id="Fecha_Checkin", autocomplete="off">
+            </div>
+            <div class="field">
+                <label for="Fecha_CheckOut">Fecha Check-Out Nueva</label>
+                <input type="date" name="Fecha_CheckOut", id="Fecha_CheckOut", autocomplete="off">
+            </div>
+            <!-- Botón para modificar una reserva -->
+            <input type="submit" name="submit" value="Modificar Reserva">
+        <!-- Mostrar mensaje de errora -->
+        <?php if($error_message_modificar_reserva !== ""): ?>
+            <p><?php echo $error_message_modificar_reserva; ?></p>
+        <?php endif; ?>
+        <?php if($success_message_modificar_reserva !== ""): ?>
+            <p><?php echo $success_message_modificar_reserva; ?></p>
+        <?php endif; ?>
+
+        <hr>
+        <h2>Borrar Reserva</h2>
+        <!-- Formulario Borrar Reserva -->
+        <form action="" method="post">
+            <div class="field">
+                <label for="Rut">Rut</label>
+                <input type="number" name="Rut", id="Rut", autocomplete="off">
+            </div>
+            <div class="field">
+                <label for="Numero_habitacion">Habitación Reservada</label>
+                <input type="number" name="Numero_habitacion", id="Numero_habitacion", autocomplete="off">
+            </div>
+            <!-- Botón para Borrar una reserva -->
+            <input type="submit" name="submit" value="Borrar Reserva">
+        <!-- Mostrar mensaje de error -->
+        <?php if($error_message_borrar_reserva !== ""): ?>
+            <p><?php echo $error_message_borrar_reserva; ?></p>
+        <?php endif; ?>
+        <?php if($success_message_borrar_reserva !== ""): ?>
+            <p><?php echo $success_message_borrar_reserva; ?></p>
+        <?php endif; ?>
+
+
+    </body>
 </html>
