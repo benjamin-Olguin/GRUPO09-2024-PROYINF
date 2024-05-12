@@ -2,15 +2,14 @@
 require 'bd.php';
 
 $records = array();
-if($results = $conn->query('SELECT * FROM  Tours')) {
-    if($results->num_rows){
-        while($row = $results->fetch_object()){
+if ($results = $conn->query('SELECT * FROM VistaDetallesTours')) {
+    if ($results->num_rows) {
+        while ($row = $results->fetch_object()) {
             $records[] = $row;
         }
         $results->free();
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -21,8 +20,8 @@ if($results = $conn->query('SELECT * FROM  Tours')) {
     <h1>Tours La Diversión</h1>
     <h2>Tours Disponibles</h2>
     <?php
-    if(!count($records)) {
-        echo 'No records';
+    if (!count($records)) {
+        echo 'No hay tours disponibles';
     } else {
     ?>
         <table>
@@ -31,18 +30,20 @@ if($results = $conn->query('SELECT * FROM  Tours')) {
                 <th>Lugar</th>
                 <th>Medio de Transporte</th>
                 <th>Imagen</th>
+                <th>Precio</th>
             </thead>
             <tbody>
-                <?php foreach($records as $r) { ?>
+                <?php foreach ($records as $r) { ?>
                     <tr>
                         <td><?php echo $r->Fecha ?></td>
                         <td><?php echo $r->Lugar ?></td>
                         <td><?php echo $r->Medio_Transporte ?></td>
-                        <td><?php echo $r->Imagen ?></td>
+                        <td><img src="images/<?php echo $r->Imagen ?>" alt="Imagen del tour" style="width:100px;"></td>
+                        <td><?php echo $r->Precio ?></td>
                     </tr>
                 <?php } ?>
-                </tbody>
-            </table>
+            </tbody>
+        </table>
     <?php } ?>
     <hr>
     <h2>Reservar / Cancelar Tours</h2>

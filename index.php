@@ -67,5 +67,8 @@
     <form action="Tours.php" method="get">
         <button type="submit">Reserva un tour</button>
     </form>
+    <form action="CheckOut.php" method="get">
+        <button type="submit">CheckOut</button>
+    </form>
 </body>
 </html>
