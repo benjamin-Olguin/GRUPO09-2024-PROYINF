@@ -27,19 +27,29 @@
 
     if (isset($_GET['search']) && $_GET['search'] !== '') {
         $search = intval($_GET['search']);
-        $sql = "SELECT * FROM habitaciones WHERE Estado = 0 AND Numero_habitacion = $search";
+        $sql = "SELECT * FROM habitaciones WHERE Numero_habitacion = $search";
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-                echo "Número de Habitación: " . $row['Numero_habitacion'] .
-                     " - Tipo: " . $row['Tipo_habitacion'] .
-                     " - Precio por noche: $" . $row['Precio'] . 
-                     " - Estado: " . ($row['Estado'] ? "Reservada" : "Disponible") . "<br>";
-                echo "<form action='RealizarReserva.php' method='post'>
-                        <input type='hidden' name='Numero_habitacion' value='" . $row['Numero_habitacion'] . "'>
-                        <button type='submit'>Reservar</button>
-                      </form>";
+                if ($row["Estado"] == 0) {
+                    echo "Número de Habitación: " . $row['Numero_habitacion'] .
+                        " - Tipo: " . $row['Tipo_habitacion'] .
+                        " - Precio por noche: $" . $row['Precio'] . 
+                        " - Estado: " . ($row['Estado'] ? "Reservada" : "Disponible") . "<br>";
+                    echo "<form action='RealizarReserva.php' method='post'>
+                            <input type='hidden' name='Numero_habitacion' value='" . $row['Numero_habitacion'] . "'>
+                            <button type='submit'>Reservar</button>
+                        </form>";
+                }
+                else {
+                    echo 
+                        " <i><b>La Habitación " . $row['Numero_habitacion'] . " ya está reservada </b></i> <br>
+                        Número de Habitación: " . $row['Numero_habitacion'] .
+                        " - Tipo: " . $row['Tipo_habitacion'] .
+                        " - Precio por noche: $" . $row['Precio'] . 
+                        " - Estado: " . ($row['Estado'] ? "Reservada" : "No Disponible") . "<br>";
+                }
             }
         } else {
             echo "No se encuentra el número de habitación buscado.";
