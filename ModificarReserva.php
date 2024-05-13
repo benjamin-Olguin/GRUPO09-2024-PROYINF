@@ -37,6 +37,15 @@ if (!empty($_POST['submit'])) {
                         actualizarEstadoHabitacion($Numero_habitacion, 0);
                         actualizarEstadoHabitacion($Numero_habitacion_nueva, 1);
                     }
+                    // Borrar tours si existen
+                    $stmt_delete = $conn->prepare("DELETE FROM reservas_tours WHERE Id_Reserva = ?");
+                    $stmt_delete->bind_param("i", $idReservaExistente);
+                    if ($stmt_delete->execute()) {
+                        echo "<div class='success'>Las reservas tours fueron cancelados</div>";
+                    } else {
+                        echo "<div class='error'>Error al cancelar la reserva del tour.</div>";
+                    }
+                    $stmt_delete->close();
                     $success_message_modificar_reserva = "Reserva modificada con éxito.";
                 } else {
                     $error_message = "Error al modificar la reserva.";

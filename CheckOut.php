@@ -33,11 +33,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             $stmt_reserva->close();
 
+            // Sumar el precio de las reservas de tours anteriores a la fecha actual
+            $stmt_tours = $conn->prepare("SELECT SUM(t.Precio) FROM reservas_tours rt JOIN tours t ON rt.Id_Tour = t.Id_Tour JOIN reservas r ON rt.Id_Reserva = r.Id_Reserva WHERE t.Fecha <= NOW() AND rt.Id_Reserva = ?");
+            $stmt_tours->bind_param("i" , $Id_Reserva);
+            $stmt_tours->execute();
+            $stmt_tours->bind_result($Total_Tours);
+            $stmt_tours->fetch();
+            $stmt_tours->close();
+
             // Trasladar reserva al historial
-            $stmt_hist = $conn->prepare("INSERT INTO historial (Id_Reserva, Rut, Numero_habitacion, Fecha_Checkout, Calificacion) SELECT Id_Reserva, Rut, Numero_habitacion, NOW(), ? FROM reservas WHERE Rut = ? AND Numero_habitacion = ?");
-            $stmt_hist->bind_param("isi", $Calificacion, $Rut, $Numero_habitacion);
+            $stmt_hist = $conn->prepare("INSERT INTO historial ( Rut, Numero_habitacion, Fecha_Checkout, Calificacion, Total_Tours) SELECT Rut, Numero_habitacion, NOW(), ?, ? FROM reservas WHERE Rut = ? AND Numero_habitacion = ?");
+            $stmt_hist->bind_param("iisi", $Calificacion, $Total_Tours, $Rut, $Numero_habitacion);
             $stmt_hist->execute();
             $stmt_hist->close();
+
 
             // Borrar reserva
             $stmt_del = $conn->prepare("DELETE FROM reservas WHERE Rut = ? AND Numero_habitacion = ?");
@@ -50,6 +59,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_update->bind_param("i", $Numero_habitacion);
             $stmt_update->execute();
             $stmt_update->close();
+
+            
 
             $conn->commit();
             echo "Pago realizado con éxito. Gracias por su estancia.";

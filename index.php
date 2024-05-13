@@ -2,17 +2,6 @@
 <html lang="es">
 <head>
     <title>Consultar Habitaciones Disponibles</title>
-    <style>
-        /* Eliminar las flechas de los inputs de tipo número */
-        input[type="number"]::-webkit-inner-spin-button, 
-        input[type="number"]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
-    </style>
 </head>
 <body>
     <h1>Habitaciones Disponibles</h1>
@@ -69,6 +58,9 @@
     </form>
     <form action="CheckOut.php" method="get">
         <button type="submit">CheckOut</button>
+    </form>
+    <form action="reporteria.php" method="get">
+        <button type="submit">Reporteria</button>
     </form>
 </body>
 </html>

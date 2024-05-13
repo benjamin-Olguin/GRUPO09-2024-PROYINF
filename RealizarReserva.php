@@ -35,12 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['Rut'], $_POST['Fecha_C
         $stmt_update_hab->bind_param("i", $Numero_habitacion);
         $stmt_update_hab->execute();
 
-        // Actualizar el valor acumulado del cliente
-        $sql_update_cliente = "UPDATE clientes SET Valor_Acumulado = Valor_Acumulado + ? WHERE Rut = ?";
-        $stmt_cliente = $conn->prepare($sql_update_cliente);
-        $stmt_cliente->bind_param("ds", $Precio, $Rut);
-        $stmt_cliente->execute();
-
         // Confirmar la transacción
         $conn->commit();
 

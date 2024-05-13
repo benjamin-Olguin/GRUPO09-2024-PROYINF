@@ -1,7 +1,8 @@
 Asunciones:
     - No se puede modificar la reserva en medio de la estadía del cliente, si lo hace deberia hacer un checkout
-
+    - No se puede hacer checkout si el cliente tiene reservas para una fecha futura a la actual.
 Por hacer:
-    - Que si un Cliente modifica su reserva se eliminan todas sus reservas previas de tours
-    - Revisar que hacer con el valor acomulado, no estoy seguro de que este bien calculado en RealizarReserva, de igual forma yo creo q no es necesario tener ese atributo 
-    ya que a mi parecer es mejor calcular todo en el checkOut  
+    - Checkout: Hacer que procedure solo cobre los tours hasta el dia actual
+    - reporteria:
+        - Crear Function que saque el promedio de la calificaciones de la habitacion y
+        otra que saque el monto total por habitacion
