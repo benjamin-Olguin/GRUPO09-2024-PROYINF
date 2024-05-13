@@ -13,10 +13,15 @@ if ($results = $conn->query("SELECT Lugar, Fecha FROM tours")) {
 
 // Procesar el formulario
 if (!empty($_POST['submit'])) {
-    $Rut                = trim($_POST["Rut"]);
-    $Numero_habitacion  = trim($_POST["Numero_habitacion"]);
-    $tourFecha = $_POST['tour']; // Corregido: el nombre del atributo name del select debe ser 'tour', no 'TourFecha'
-    list($Lugar, $Fecha) = explode("|", $tourFecha);
+    $Rut = trim($_POST["Rut"]);
+    if (empty($Rut) || empty($Numero_habitacion)) {
+        $error_message = "El Rut y el número de habitación son requeridos.";
+    } elseif (strlen($Rut) != 8) {
+        $error_message = "El Rut debe tener exactamente 8 dígitos.";
+    } else {
+        $tourFecha = $_POST['tour'];
+        list($Lugar, $Fecha) = explode("|", $tourFecha);
+    }
 
     // Obtenemos el id_reserva y las fechas de CheckIn y CheckOut del cliente
     $stmt_reserva = $conn->prepare("SELECT Id_Reserva, Fecha_Checkin, Fecha_CheckOut FROM reservas WHERE Rut = ? AND Numero_habitacion = ?");

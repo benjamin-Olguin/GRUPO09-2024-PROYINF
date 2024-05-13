@@ -17,8 +17,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result = $conn->query("SELECT @TotalAPagar AS TotalAPagar");
         $row = $result->fetch_assoc();
         $Total_A_Pagar = $row['TotalAPagar'];
-
-        echo "Total a pagar calculado: $" . $Total_A_Pagar;
+        if($Total_A_Pagar)
+            echo "Total a pagar calculado: $Total_A_Pagar $";
     } elseif (isset($_POST['pagar'])) {
         // Confirmar el pago y finalizar el proceso de checkout
         $conn->begin_transaction();
@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "Pago realizado con éxito. Gracias por su estancia.";
         } catch (Exception $e) {
             $conn->rollback();
-            echo "Error durante el proceso de checkout: " . $e->getMessage();
+            echo $e->getMessage();
         }
     }
 }
@@ -76,6 +76,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="es">
 <head>
     <title>Checkout de Cliente</title>
+    <link rel="stylesheet" href="Css/styles_Tours.css"> <!-- Asegúrate de que la ruta al archivo CSS es correcta -->
+
 </head>
 <body>
     <h1>Checkout de Cliente</h1>

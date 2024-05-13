@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: May 13, 2024 at 10:09 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 14-05-2024 a las 01:40:36
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,12 +18,12 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `la_diversion`
+-- Base de datos: `la_diversion`
 --
 
 DELIMITER $$
 --
--- Procedures
+-- Procedimientos
 --
 CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckoutCliente` (IN `RutCliente` VARCHAR(255), IN `NumeroHabitacion` INT, IN `CalificacionCliente` INT, OUT `TotalAPagar` DECIMAL(10,2))   BEGIN
     DECLARE TotalEstancia DECIMAL(10,2);
@@ -51,7 +51,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckoutCliente` (IN `RutCliente` V
     FROM tours t
     JOIN reservas_tours rt ON t.id_tour = rt.Id_Tour
     JOIN reservas r ON rt.Id_Reserva = r.Id_Reserva
-    WHERE r.Rut = RutCliente AND r.Numero_habitacion = NumeroHabitacion AND r.Fecha_Checkin <= t.Fecha AND r.Fecha_CheckOut >= t.Fecha;
+    WHERE r.Rut = RutCliente AND r.Numero_habitacion = NumeroHabitacion AND r.Fecha_Checkin <= t.Fecha AND r.Fecha_CheckOut >= t.Fecha AND
+          t.Fecha <= Checkout;
 
     -- Calcular el total a pagar
     SET TotalAPagar = TotalEstancia + TotalTours;
@@ -63,7 +64,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `CheckoutCliente` (IN `RutCliente` V
 END$$
 
 --
--- Functions
+-- Funciones
 --
 CREATE DEFINER=`root`@`localhost` FUNCTION `calcular_promedio_calificaciones` (`numero_habitacion_param` INT) RETURNS DECIMAL(10,2)  BEGIN
     DECLARE promedio DECIMAL(10,2);
@@ -90,7 +91,7 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `habitaciones`
+-- Estructura de tabla para la tabla `habitaciones`
 --
 
 CREATE TABLE `habitaciones` (
@@ -101,20 +102,20 @@ CREATE TABLE `habitaciones` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `habitaciones`
+-- Volcado de datos para la tabla `habitaciones`
 --
 
 INSERT INTO `habitaciones` (`Numero_habitacion`, `Tipo_habitacion`, `Precio`, `Estado`) VALUES
-(101, 'Single', 50, 0),
+(101, 'Single', 50, 1),
 (102, 'Double', 75, 1),
-(103, 'King', 100, 0),
-(104, 'Single', 50, 0),
-(105, 'King', 100, 0);
+(103, 'King', 100, 1),
+(104, 'Single', 50, 1),
+(105, 'King', 100, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `historial`
+-- Estructura de tabla para la tabla `historial`
 --
 
 CREATE TABLE `historial` (
@@ -127,23 +128,27 @@ CREATE TABLE `historial` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `historial`
+-- Volcado de datos para la tabla `historial`
 --
 
 INSERT INTO `historial` (`Id_Historial`, `Rut`, `Numero_habitacion`, `Fecha_Checkout`, `Calificacion`, `Total_Tours`) VALUES
 (30, '11111111', 104, '2024-05-12', 1, NULL),
-(31, '11111111', 101, '2024-05-12', 3, NULL),
-(32, '11111111', 101, '2024-05-13', 3, NULL),
-(33, '11111111', 101, '2024-05-13', 3, NULL),
-(34, '11111111', 101, '2024-05-13', 3, 30),
+(31, '11111111', 101, '2024-05-12', 2, NULL),
+(32, '11111111', 101, '2024-05-13', 2, NULL),
+(33, '11111111', 101, '2024-05-13', 2, NULL),
+(34, '11111111', 101, '2024-05-13', 2, 30),
 (35, '22222222', 101, '2024-05-13', 5, NULL),
 (36, '22222222', 102, '2024-05-13', 1, 30),
-(37, '11111111', 102, '2024-05-13', 5, 30);
+(37, '11111111', 102, '2024-05-13', 2, 30),
+(38, '33333333', 104, '2024-05-13', 3, 75),
+(39, '77777777', 104, '2024-05-13', 2, NULL),
+(40, '11111111', 101, '2024-05-13', 2, 75),
+(41, '11111111', 101, '2024-05-13', 2, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `reservas`
+-- Estructura de tabla para la tabla `reservas`
 --
 
 CREATE TABLE `reservas` (
@@ -155,14 +160,18 @@ CREATE TABLE `reservas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `reservas`
+-- Volcado de datos para la tabla `reservas`
 --
 
 INSERT INTO `reservas` (`Id_Reserva`, `Rut`, `Numero_habitacion`, `Fecha_Checkin`, `Fecha_CheckOut`) VALUES
-(42, 12345678, 102, '2024-04-29', '2024-06-09');
+(58, 66666666, 103, '2024-07-11', '2024-07-25'),
+(61, 44444444, 104, '2024-05-02', '2024-05-16'),
+(64, 55555555, 105, '2024-05-09', '2024-05-16'),
+(66, 12983432, 102, '2024-05-02', '2024-05-23'),
+(67, 19283743, 101, '2024-05-01', '2024-05-22');
 
 --
--- Triggers `reservas`
+-- Disparadores `reservas`
 --
 DELIMITER $$
 CREATE TRIGGER `eliminar_reservas_tours` AFTER UPDATE ON `reservas` FOR EACH ROW BEGIN
@@ -174,7 +183,7 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `reservas_tours`
+-- Estructura de tabla para la tabla `reservas_tours`
 --
 
 CREATE TABLE `reservas_tours` (
@@ -183,10 +192,17 @@ CREATE TABLE `reservas_tours` (
   `Id_Reserva` int(11) NOT NULL COMMENT 'id de reserva de habitacion'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `reservas_tours`
+--
+
+INSERT INTO `reservas_tours` (`Id_Reserva_Tour`, `Id_Tour`, `Id_Reserva`) VALUES
+(46, 0, 67);
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tours`
+-- Estructura de tabla para la tabla `tours`
 --
 
 CREATE TABLE `tours` (
@@ -199,21 +215,21 @@ CREATE TABLE `tours` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tours`
+-- Volcado de datos para la tabla `tours`
 --
 
 INSERT INTO `tours` (`Id_Tour`, `Fecha`, `Lugar`, `Medio_Transporte`, `Imagen`, `Precio`) VALUES
-(0, '2024-05-20', 'Parque Nacional', 'Autobús', 'imagen_parque_nacional.jpg', 10),
-(1, '2024-06-05', 'Museo de Historia', 'Caminando', 'imagen_museo_historia.jpg', 20),
-(2, '2024-05-09', 'Playa Los Cocos', 'Barco', 'imagen_playa_los_cocos.jpg', 30),
-(3, '2024-08-20', 'Montañas El Gran Pico', 'Teleférico', 'imagen_montanas_gran_pico.jpg', 40),
+(0, '2024-05-20', 'Parque Nacional', 'Autobús', 'imagen_parque_nacional.jpg', 25),
+(1, '2024-06-05', 'Museo de Historia', 'Caminando', 'imagen_museo_historia.jpg', 10),
+(2, '2024-05-09', 'Playa Los Cocos', 'Barco', 'imagen_playa_los_cocos.jpg', 75),
+(3, '2024-08-20', 'Montañas El Gran Pico', 'Teleférico', 'imagen_montanas_gran_pico.jpg', 30),
 (4, '2024-09-05', 'Valle de los Reyes', 'Caballo', 'imagen_valle_reyes.jpg', 50);
 
 -- --------------------------------------------------------
 
 --
--- Stand-in structure for view `vistadetallestours`
--- (See below for the actual view)
+-- Estructura Stand-in para la vista `vistadetallestours`
+-- (Véase abajo para la vista actual)
 --
 CREATE TABLE `vistadetallestours` (
 `Id_Tour` int(11)
@@ -222,80 +238,81 @@ CREATE TABLE `vistadetallestours` (
 ,`Medio_Transporte` varchar(100)
 ,`Imagen` varchar(255)
 ,`Precio` int(11)
+,`Dias_Hasta_El_Tour` int(7)
 );
 
 -- --------------------------------------------------------
 
 --
--- Structure for view `vistadetallestours`
+-- Estructura para la vista `vistadetallestours`
 --
 DROP TABLE IF EXISTS `vistadetallestours`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vistadetallestours`  AS SELECT `tours`.`Id_Tour` AS `Id_Tour`, `tours`.`Lugar` AS `Lugar`, `tours`.`Fecha` AS `Fecha`, `tours`.`Medio_Transporte` AS `Medio_Transporte`, `tours`.`Imagen` AS `Imagen`, `tours`.`Precio` AS `Precio` FROM `tours` WHERE `tours`.`Fecha` >= curdate() OR `tours`.`Fecha` <= curdate() ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vistadetallestours`  AS SELECT `tours`.`Id_Tour` AS `Id_Tour`, `tours`.`Lugar` AS `Lugar`, `tours`.`Fecha` AS `Fecha`, `tours`.`Medio_Transporte` AS `Medio_Transporte`, `tours`.`Imagen` AS `Imagen`, `tours`.`Precio` AS `Precio`, to_days(`tours`.`Fecha`) - to_days(curdate()) AS `Dias_Hasta_El_Tour` FROM `tours` ;
 
 --
--- Indexes for dumped tables
+-- Índices para tablas volcadas
 --
 
 --
--- Indexes for table `habitaciones`
+-- Indices de la tabla `habitaciones`
 --
 ALTER TABLE `habitaciones`
   ADD PRIMARY KEY (`Numero_habitacion`);
 
 --
--- Indexes for table `historial`
+-- Indices de la tabla `historial`
 --
 ALTER TABLE `historial`
   ADD PRIMARY KEY (`Id_Historial`);
 
 --
--- Indexes for table `reservas`
+-- Indices de la tabla `reservas`
 --
 ALTER TABLE `reservas`
   ADD PRIMARY KEY (`Id_Reserva`);
 
 --
--- Indexes for table `reservas_tours`
+-- Indices de la tabla `reservas_tours`
 --
 ALTER TABLE `reservas_tours`
   ADD PRIMARY KEY (`Id_Reserva_Tour`),
   ADD KEY `id_reserva` (`Id_Reserva`);
 
 --
--- Indexes for table `tours`
+-- Indices de la tabla `tours`
 --
 ALTER TABLE `tours`
   ADD PRIMARY KEY (`Id_Tour`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT for table `historial`
+-- AUTO_INCREMENT de la tabla `historial`
 --
 ALTER TABLE `historial`
-  MODIFY `Id_Historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `Id_Historial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
--- AUTO_INCREMENT for table `reservas`
+-- AUTO_INCREMENT de la tabla `reservas`
 --
 ALTER TABLE `reservas`
-  MODIFY `Id_Reserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `Id_Reserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
--- AUTO_INCREMENT for table `reservas_tours`
+-- AUTO_INCREMENT de la tabla `reservas_tours`
 --
 ALTER TABLE `reservas_tours`
-  MODIFY `Id_Reserva_Tour` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `Id_Reserva_Tour` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
--- Constraints for dumped tables
+-- Restricciones para tablas volcadas
 --
 
 --
--- Constraints for table `reservas_tours`
+-- Filtros para la tabla `reservas_tours`
 --
 ALTER TABLE `reservas_tours`
   ADD CONSTRAINT `id_reserva` FOREIGN KEY (`Id_Reserva`) REFERENCES `reservas` (`Id_Reserva`) ON DELETE CASCADE ON UPDATE NO ACTION;

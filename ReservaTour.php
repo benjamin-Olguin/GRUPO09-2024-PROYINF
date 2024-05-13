@@ -74,7 +74,17 @@ if (!empty($_POST['submit'])) {
 <html>
 <head>
     <title>Reservar Tours</title>
-
+    <style>
+        /* Estilos para ocultar las flechas en los campos de número */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
 </head>
 <body>
 <h2>Crear Reserva Tour</h2>

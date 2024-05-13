@@ -9,43 +9,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['Rut'], $_POST['Fecha_C
 
     // Iniciar transacción para garantizar la integridad de la data
     $conn->begin_transaction();
-
-    try {
-        // Obtener el precio de la habitación desde la tabla habitaciones
-        $sql_precio = "SELECT Precio FROM habitaciones WHERE Numero_habitacion = ?";
-        $stmt_precio = $conn->prepare($sql_precio);
-        $stmt_precio->bind_param("i", $Numero_habitacion);
-        $stmt_precio->execute();
-        $resultado_precio = $stmt_precio->get_result();
-        if ($fila_precio = $resultado_precio->fetch_assoc()) {
-            $Precio = $fila_precio['Precio'];
-        } else {
-            throw new Exception("No se encontró la habitación o está inactiva.");
-        }
-
-        // Insertar la reserva en la base de datos
-        $sql_reserva = "INSERT INTO reservas (Rut, Numero_habitacion, Fecha_Checkin, Fecha_CheckOut) VALUES (?, ?, ?, ?)";
-        $stmt_reserva = $conn->prepare($sql_reserva);
-        $stmt_reserva->bind_param("iiss", $Rut, $Numero_habitacion, $Fecha_Checkin, $Fecha_CheckOut);
-        $stmt_reserva->execute();
-
-        // Actualizar el estado de la habitación a ocupado (1)
-        $sql_update_hab = "UPDATE habitaciones SET Estado = 1 WHERE Numero_habitacion = ?";
-        $stmt_update_hab = $conn->prepare($sql_update_hab);
-        $stmt_update_hab->bind_param("i", $Numero_habitacion);
-        $stmt_update_hab->execute();
-
-        // Confirmar la transacción
-        $conn->commit();
-
-        echo "Reserva realizada con éxito.";
-        header("Location: index.php");
-        exit();
-    } catch (Exception $e) {
-        // Revertir la transacción en caso de error
-        $conn->rollback();
-        echo "Error al realizar la reserva: " . $e->getMessage();
+    if (strtotime($Fecha_Checkin) > strtotime($Fecha_CheckOut)) {
+        $error = "La fecha de check-in no puede ser posterior a la fecha de check-out.";
+        echo $error;
     }
+    else{
+        try {
+            // Obtener el precio de la habitación desde la tabla habitaciones
+            $sql_precio = "SELECT Precio FROM habitaciones WHERE Numero_habitacion = ?";
+            $stmt_precio = $conn->prepare($sql_precio);
+            $stmt_precio->bind_param("i", $Numero_habitacion);
+            $stmt_precio->execute();
+            $resultado_precio = $stmt_precio->get_result();
+            if ($fila_precio = $resultado_precio->fetch_assoc()) {
+                $Precio = $fila_precio['Precio'];
+            } else {
+                throw new Exception("No se encontró la habitación o está inactiva.");
+            }
+    
+            // Insertar la reserva en la base de datos
+            $sql_reserva = "INSERT INTO reservas (Rut, Numero_habitacion, Fecha_Checkin, Fecha_CheckOut) VALUES (?, ?, ?, ?)";
+            $stmt_reserva = $conn->prepare($sql_reserva);
+            $stmt_reserva->bind_param("iiss", $Rut, $Numero_habitacion, $Fecha_Checkin, $Fecha_CheckOut);
+            $stmt_reserva->execute();
+    
+            // Actualizar el estado de la habitación a ocupado (1)
+            $sql_update_hab = "UPDATE habitaciones SET Estado = 1 WHERE Numero_habitacion = ?";
+            $stmt_update_hab = $conn->prepare($sql_update_hab);
+            $stmt_update_hab->bind_param("i", $Numero_habitacion);
+            $stmt_update_hab->execute();
+    
+            // Confirmar la transacción
+            $conn->commit();
+    
+            echo "Reserva realizada con éxito.";
+            header("Location: index.php");
+            exit();
+        } catch (Exception $e) {
+            // Revertir la transacción en caso de error
+            $conn->rollback();
+            echo "Error al realizar la reserva: " . $e->getMessage();
+        }
+        
+    }
+    
 } else {
     echo "";
 }
@@ -57,6 +64,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['Rut'], $_POST['Fecha_C
 <html>
 <head>
     <title>Formulario de Reserva</title>
+    <link rel="stylesheet" href="Css/styles_Tours.css"> <!-- Asegúrate de que la ruta al archivo CSS es correcta -->
+
 </head>
 <body>
     <h1>Formulario de Reserva</h1>

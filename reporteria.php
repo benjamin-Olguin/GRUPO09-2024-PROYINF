@@ -49,6 +49,8 @@ function obternerSumTours($Numero_habitacion){
 <html>
     <head>
         <title>Reporteria</title>
+        <link rel="stylesheet" href="Css/styles_Tours.css"> <!-- Asegúrate de que la ruta al archivo CSS es correcta -->
+
     </head>
     <body>
         <form action="index.php" method="get">
@@ -63,7 +65,7 @@ function obternerSumTours($Numero_habitacion){
                 <thead>
                     <th>Habitación</th>
                     <th>Promedio Calificación</th>
-                    <th>Total de Tours</th>
+                    <th>Total Recaudado</th>
                 </thead>
                 <tbody>
                     <?php foreach ($records1 as $m) { ?>
@@ -96,7 +98,7 @@ function obternerSumTours($Numero_habitacion){
                     <th>Habitación</th>
                     <th>Calificación</th>
                     <th>Fecha</th>
-                    <th>Total Tours</th>
+                    <th>Monto</th>
                 </thead>
                 <tbody>
                     <?php foreach ($records as $r) { ?>
@@ -104,7 +106,13 @@ function obternerSumTours($Numero_habitacion){
                             <td><?php echo $r->Numero_habitacion ?></td>
                             <td><?php echo $r->Calificacion ?></td>
                             <td><?php echo $r->Fecha_Checkout ?></td>
-                            <td><?php echo $r->Total_Tours ?></td>
+                            <td><?php 
+                            if ($r->Total_Tours)
+                                echo $r->Total_Tours ;
+                            else {
+                                echo "0";
+                                }    ?>
+                            </td>
                         </tr>
                     <?php } ?>
                 </tbody>

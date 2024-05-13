@@ -2,6 +2,8 @@
 <html lang="es">
 <head>
     <title>Consultar Habitaciones Disponibles</title>
+    <link rel="stylesheet" href="Css/styles_Tours.css"> <!-- Asegúrate de que la ruta al archivo CSS es correcta -->
+
 </head>
 <body>
     <h1>Habitaciones Disponibles</h1>
@@ -24,7 +26,7 @@
                 if ($row["Estado"] == 0) {
                     echo "Número de Habitación: " . $row['Numero_habitacion'] .
                         " - Tipo: " . $row['Tipo_habitacion'] .
-                        " - Precio por noche: $" . $row['Precio'] . 
+                        " - Precio por noche: " . $row['Precio']. "$" . 
                         " - Estado: " . ($row['Estado'] ? "Reservada" : "Disponible") . "<br>";
                     echo "<form action='RealizarReserva.php' method='post'>
                             <input type='hidden' name='Numero_habitacion' value='" . $row['Numero_habitacion'] . "'>
@@ -36,7 +38,7 @@
                         " <i><b>La Habitación " . $row['Numero_habitacion'] . " ya está reservada </b></i> <br>
                         Número de Habitación: " . $row['Numero_habitacion'] .
                         " - Tipo: " . $row['Tipo_habitacion'] .
-                        " - Precio por noche: $" . $row['Precio'] . 
+                        " - Precio por noche: " . $row['Precio'] . "$" . 
                         " - Estado: " . ($row['Estado'] ? "Reservada" : "No Disponible") . "<br>";
                 }
             }
