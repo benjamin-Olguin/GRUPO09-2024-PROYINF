@@ -1,8 +1,16 @@
+Nombre: Benjamín Olguin Pozo
+Rol: 202273517-1
+
+Nombre: Isaias Carte Figueroa
+Rol: 202273606-2
+
+Instrucciones de ejecucion:
+    1.- Se debe tener correctamente instalado XAMPPC Control Panel e 
+    iniciar los modulos de Apache y MySql.
+    2.- Se debe tambien crear una base de datos en phpMyAdmin e 
+    importar las tablas del archivo
+    3.- Correr index.php.
+
 Asunciones:
     - No se puede modificar la reserva en medio de la estadía del cliente, si lo hace deberia hacer un checkout
     - No se puede hacer checkout si el cliente tiene reservas para una fecha futura a la actual.
-Por hacer:
-    - Checkout: Hacer que procedure solo cobre los tours hasta el dia actual
-    - reporteria:
-        - Crear Function que saque el promedio de la calificaciones de la habitacion y
-        otra que saque el monto total por habitacion
