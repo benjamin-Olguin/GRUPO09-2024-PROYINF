@@ -81,9 +81,6 @@ if (!empty($_POST['submit'])) {
             -webkit-appearance: none;
             margin: 0;
         }
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
     </style>
 </head>
 <body>

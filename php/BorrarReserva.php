@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['Id_Reserva'])) {
 <html lang="es">
 <head>
     <title>Borrar Reserva</title>
-    <link rel="stylesheet" href="Css/styles_Tours.css"> <!-- Asegúrate de que la ruta al archivo CSS es correcta -->
+    <link rel="stylesheet" href="../Css/styles_Tours.css"> <!-- Asegúrate de que la ruta al archivo CSS es correcta -->
 
 </head>
 <body>

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <title>Consultar Habitaciones Disponibles</title>
-    <link rel="stylesheet" href="Css/styles_Tours.css"> <!-- Asegúrate de que la ruta al archivo CSS es correcta -->
+    <link rel="stylesheet" href="../Css/styles_Tours.css"> <!-- Asegúrate de que la ruta al archivo CSS es correcta -->
 
 </head>
 <body>

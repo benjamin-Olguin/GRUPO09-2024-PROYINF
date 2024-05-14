@@ -64,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['Rut'], $_POST['Fecha_C
 <html>
 <head>
     <title>Formulario de Reserva</title>
-    <link rel="stylesheet" href="Css/styles_Tours.css"> <!-- Asegúrate de que la ruta al archivo CSS es correcta -->
+    <link rel="stylesheet" href="../Css/styles_Tours.css"> <!-- Asegúrate de que la ruta al archivo CSS es correcta -->
 
 </head>
 <body>

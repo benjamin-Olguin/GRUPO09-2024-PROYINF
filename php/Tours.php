@@ -15,7 +15,7 @@ if ($results = $conn->query('SELECT * FROM VistaDetallesTours')) {
 <html lang="es">
 <head>
     <title>Tours Disponibles</title>
-    <link rel="stylesheet" href="Css/styles_Tours.css">
+    <link rel="stylesheet" href="../Css/styles_Tours.css">
 </head>
 <body>
     <h1>Tours La Diversión</h1>
@@ -40,7 +40,7 @@ if ($results = $conn->query('SELECT * FROM VistaDetallesTours')) {
                         <td><?php echo $r->Fecha ?></td>
                         <td><?php echo $r->Lugar ?></td>
                         <td><?php echo $r->Medio_Transporte ?></td>
-                        <td><img src="images/<?php echo $r->Imagen ?>" alt="Imagen del tour"></td>
+                        <td><img src="../images/<?php echo $r->Imagen ?>" alt="Imagen del tour"></td>
                         <td><?php echo  $r->Precio . "$"?></td>
                         <td><?php 
                         if ($r->Dias_Hasta_El_Tour < 0) {

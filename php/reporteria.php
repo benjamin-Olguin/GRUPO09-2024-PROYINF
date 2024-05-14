@@ -49,7 +49,7 @@ function obternerSumTours($Numero_habitacion){
 <html>
     <head>
         <title>Reporteria</title>
-        <link rel="stylesheet" href="Css/styles_Tours.css"> <!-- Asegúrate de que la ruta al archivo CSS es correcta -->
+        <link rel="stylesheet" href="../Css/styles_Tours.css"> <!-- Asegúrate de que la ruta al archivo CSS es correcta -->
 
     </head>
     <body>

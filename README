@@ -13,4 +13,5 @@ Instrucciones de ejecucion:
 
 Asunciones:
     - No se puede modificar la reserva en medio de la estadía del cliente, si lo hace deberia hacer un checkout
-    - No se puede hacer checkout si el cliente tiene reservas para una fecha futura a la actual.
+    - No se puede hacer checkout si el cliente tiene la reserva para una fecha futura a la actual.
+    - Si modificas una reserva, se borran todos los tours reservados con anterioridad.
