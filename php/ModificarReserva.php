@@ -2,7 +2,6 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require 'bd.php';
-require 'security.php';
 
 $error_message = "";
 $success_message_modificar_reserva = "";
@@ -17,33 +16,37 @@ if (!empty($_POST['submit'])) {
         $Fecha_Checkin_nueva = trim($_POST["Fecha_Checkin"]);
         $Fecha_CheckOut_nueva = trim($_POST["Fecha_CheckOut"]);
 
-        // Comprobar si el RUT y el número de habitación original existen
-        $idReservaExistente = obtenerIdReserva($Rut, $Numero_habitacion);
-        if (!$idReservaExistente) {
-            $error_message = "No existe una reserva con el RUT y número de habitación proporcionados.";
+        if (empty($Rut) || empty($Numero_habitacion) || empty($Numero_habitacion_nueva) || empty($Fecha_Checkin_nueva) || empty($Fecha_CheckOut_nueva)) {
+            $error_message = "Por favor, complete todos los campos.";
         } else {
-            // Verificar estados de las habitaciones
-            $habitacion_estado_actual = verificarEstadoHabitacion($Numero_habitacion);
-            $habitacion_estado_nueva = verificarEstadoHabitacion($Numero_habitacion_nueva);
-
-            if ($habitacion_estado_actual != 1) {
-                $error_message = "La habitación actual no está reservada.";
-            } else if ($habitacion_estado_nueva == 1 && $Numero_habitacion_nueva != $Numero_habitacion) {
-                $error_message = "La nueva habitación ya está reservada.";
+        // Comprobar si el RUT y el número de habitación original existen
+            $idReservaExistente = obtenerIdReserva($Rut, $Numero_habitacion);
+            if (!$idReservaExistente) {
+                $error_message = "No existe una reserva con el RUT y número de habitación proporcionados.";
             } else {
-                // Actualizar la reserva con los nuevos datos
-                if (actualizarReserva($Rut, $Numero_habitacion, $Numero_habitacion_nueva, $Fecha_Checkin_nueva, $Fecha_CheckOut_nueva)) {
-                    // Actualizar estado de las habitaciones si es necesario
-                    if ($Numero_habitacion != $Numero_habitacion_nueva) {
-                        actualizarEstadoHabitacion($Numero_habitacion, 0);
-                        actualizarEstadoHabitacion($Numero_habitacion_nueva, 1);
-                    }
-                    $success_message_modificar_reserva = "Reserva modificada con éxito.";
+                // Verificar estados de las habitaciones
+                $habitacion_estado_actual = verificarEstadoHabitacion($Numero_habitacion);
+                $habitacion_estado_nueva = verificarEstadoHabitacion($Numero_habitacion_nueva);
+
+                if ($habitacion_estado_actual != 1) {
+                    $error_message = "La habitación actual no está reservada.";
+                } else if ($habitacion_estado_nueva == 1 && $Numero_habitacion_nueva != $Numero_habitacion) {
+                    $error_message = "La nueva habitación ya está reservada.";
                 } else {
-                    $error_message = "Error al modificar la reserva.";
+                    // Actualizar la reserva con los nuevos datos
+                    if (actualizarReserva($Rut, $Numero_habitacion, $Numero_habitacion_nueva, $Fecha_Checkin_nueva, $Fecha_CheckOut_nueva)) {
+                        // Actualizar estado de las habitaciones si es necesario
+                        if ($Numero_habitacion != $Numero_habitacion_nueva) {
+                            actualizarEstadoHabitacion($Numero_habitacion, 0);
+                            actualizarEstadoHabitacion($Numero_habitacion_nueva, 1);
+                        }
+                        $success_message_modificar_reserva = "Reserva modificada con éxito.";
+                    } else {
+                        $error_message = "Error al modificar la reserva.";
+                    }
                 }
             }
-        }
+    }
     }
 }
 

@@ -12,6 +12,9 @@ Instrucciones de ejecucion:
     3.- Correr index.php.
 
 Asunciones:
+    - El checkout siempre se realizara en la fecha actual (fecha del computador).
+    - Para los casos de prueba cambiaran las fechas de Checkin - Checkout y de los tours. 
     - No se puede modificar la reserva en medio de la estadía del cliente, si lo hace deberia hacer un checkout
     - No se puede hacer checkout si el cliente tiene la reserva para una fecha futura a la actual.
     - Si modificas una reserva, se borran todos los tours reservados con anterioridad.
+    - Solo se cobra tours si la fecha del checkout es posterior a la fecha del tour reservado.

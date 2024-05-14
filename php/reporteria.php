@@ -76,9 +76,9 @@ function obternerSumTours($Numero_habitacion){
                                 echo "-";
                             } ?></td>
                             <td><?php if(obternerSumTours($m->Numero_habitacion)){
-                                echo obternerSumTours($m->Numero_habitacion);
+                                echo obternerSumTours($m->Numero_habitacion) . "$";
                             } else{
-                                echo "0";
+                                echo "0$";
                             } ?></td>
             
                         </tr>
@@ -108,9 +108,9 @@ function obternerSumTours($Numero_habitacion){
                             <td><?php echo $r->Fecha_Checkout ?></td>
                             <td><?php 
                             if ($r->Total_Tours)
-                                echo $r->Total_Tours ;
+                                echo $r->Total_Tours . "$" ;
                             else {
-                                echo "0";
+                                echo "0$";
                                 }    ?>
                             </td>
                         </tr>
