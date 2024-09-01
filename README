@@ -1,20 +1,15 @@
-Nombre: Benjamín Olguin Pozo
-Rol: 202273517-1
+# GRUPO 09
+Este repositorio es del grupo 09
+Integrantes:
+* Isaias Carte         - ROL 202273606-2
+* Cristobal Espinoza   - ROL 202273507-4
+* Renato Roggia        - ROL 202204594-9
+* Benjamin Olguin      - ROL 202273517-1
+* **Tutor** Felipe Fernandez
 
-Nombre: Isaias Carte Figueroa
-Rol: 202273606-2
+## WIKI
+puede acceder a la wiki mediante el siguiente [enlace]
 
-Instrucciones de ejecucion:
-    1.- Se debe tener correctamente instalado XAMPPC Control Panel e 
-    iniciar los modulos de Apache y MySql.
-    2.- Se debe tambien crear una base de datos en phpMyAdmin e 
-    importar las tablas del archivo
-    3.- Correr index.php.
-
-Asunciones:
-    - El checkout siempre se realizara en la fecha actual (fecha del computador).
-    - Para los casos de prueba cambiaran las fechas de Checkin - Checkout y de los tours. 
-    - No se puede modificar la reserva en medio de la estadía del cliente, si lo hace deberia hacer un checkout
-    - No se puede hacer checkout si el cliente tiene la reserva para una fecha futura a la actual.
-    - Si modificas una reserva, se borran todos los tours reservados con anterioridad.
-    - Solo se cobra tours si la fecha del checkout es posterior a la fecha del tour reservado.
+## Videos
+*[Video presentacion Cliente](https://www.youtube.com/watch?v=abJau21SDIk)
+*
