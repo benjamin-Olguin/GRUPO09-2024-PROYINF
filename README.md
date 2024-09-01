@@ -9,7 +9,7 @@ Integrantes:
 * **Tutor** Felipe Fernandez
 
 ## WIKI
-puede acceder a la wiki mediante el siguiente [enlace]
+puede acceder a la wiki mediante el siguiente [enlace](https://github.com/benjamin-Olguin/GRUPO09-2024-PROYINF/wiki)
 
 ## Videos
 *[Video presentacion Cliente](https://www.youtube.com/watch?v=abJau21SDIk)
