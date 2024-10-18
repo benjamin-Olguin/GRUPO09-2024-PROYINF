@@ -1,19 +1,13 @@
 "use client";  // Marca el componente como Client Component
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Importar useRouter para redireccionar
 
 const Header = ({ handleLogin }) => {
   const [isLoginVisible, setIsLoginVisible] = useState(false);
   const [idInput, setIdInput] = useState('');
-  const router = useRouter();  // Instanciar el router
 
   const toggleLogin = () => {
     setIsLoginVisible(!isLoginVisible);
-  };
-
-  const handleRegisterRedirect = () => {
-    router.push('/register');  // Redirigir a la página de registro
   };
 
   return (
@@ -33,13 +27,30 @@ const Header = ({ handleLogin }) => {
             Login
           </button>
           <button 
-            onClick={handleRegisterRedirect}  // Redirigir al hacer clic en "Register"
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
           >
-            Register
+            Sign In
           </button>
         </div>
       </div>
+
+      {isLoginVisible && (
+        <div className="mt-3 w-full flex justify-center">
+          <input
+            type="text"
+            value={idInput}
+            onChange={(e) => setIdInput(e.target.value)}
+            placeholder="ID de Administrador o Colaborador"
+            className="my-3 p-3 w-[80%] max-w-[400px] border border-gray-300 rounded"
+          />
+          <button
+            onClick={() => handleLogin(idInput)}
+            className="my-3 ml-2 p-3 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
+          >
+            Login
+          </button>
+        </div>
+      )}
     </header>
   );
 };

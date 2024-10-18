@@ -6,38 +6,21 @@ import Header from './components/header';  // Importa tu nuevo componente Header
 import BoletinesPublicados from './components/boletinesPublicados';  // Importa el componente de Boletines
 
 const LandingPage = () => {
+  // Definir los estados de isAdmin e isCollaborator
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCollaborator, setIsCollaborator] = useState(false);
 
-  // Nueva función handleLogin que hace una solicitud al backend
-  const handleLogin = async (username, password) => {
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),  // Enviar los datos de login al backend
-      });
-
-      const data = await response.json();  // Recibir respuesta del backend
-      if (data.success) {
-        alert(data.message);
-
-        // Establecer el estado dependiendo del tipo de usuario
-        if (data.user.role === 'admin') {  // Asumiendo que "role" existe en el backend
-          setIsAdmin(true);
-          setIsCollaborator(false);
-        } else if (data.user.role === 'collaborator') {
-          setIsAdmin(false);
-          setIsCollaborator(true);
-        }
-      } else {
-        alert(data.message);
-      }
-    } catch (error) {
-      console.error('Error en el login:', error);
-      alert('Hubo un error al intentar iniciar sesión. Inténtalo nuevamente.');
+  const handleLogin = (idInput) => {
+    if (idInput === '1') {
+      setIsAdmin(true);
+      setIsCollaborator(false);
+      alert('Has iniciado sesión como administrador.');
+    } else if (idInput === '2') {
+      setIsAdmin(false);
+      setIsCollaborator(true);
+      alert('Has iniciado sesión como colaborador.');
+    } else {
+      alert('ID no válido. Por favor, intenta de nuevo.');
     }
   };
 
