@@ -1,14 +1,11 @@
-"use client";  // Marca el componente como Client Component
+// app/components/header.js
+'use client';
 
-import React, { useState } from 'react';
+import { useUser } from './UserContext';
+import Link from 'next/link';
 
-const Header = ({ handleLogin }) => {
-  const [isLoginVisible, setIsLoginVisible] = useState(false);
-  const [idInput, setIdInput] = useState('');
-
-  const toggleLogin = () => {
-    setIsLoginVisible(!isLoginVisible);
-  };
+const Header = () => {
+  const { user, logout } = useUser();
 
   return (
     <header className="flex flex-col justify-between items-center bg-white bg-opacity-80 p-4">
@@ -20,37 +17,34 @@ const Header = ({ handleLogin }) => {
         />
         <h1 className="flex-grow text-center text-4xl font-bold">VIGIFIA</h1>
         <div className="space-x-4">
-          <button
-            onClick={toggleLogin}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Login
-          </button>
-          <button 
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Sign In
-          </button>
+          {user ? (
+            <>
+              <span className="text-gray-800 font-bold">
+                Rol: {user.role} - {user.username}
+              </span>
+              <button
+                onClick={logout}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Cerrar Sesión
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login">
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                  Iniciar Sesión
+                </button>
+              </Link>
+              <Link href="/register">
+                <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                  Registrarse
+                </button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
-
-      {isLoginVisible && (
-        <div className="mt-3 w-full flex justify-center">
-          <input
-            type="text"
-            value={idInput}
-            onChange={(e) => setIdInput(e.target.value)}
-            placeholder="ID de Administrador o Colaborador"
-            className="my-3 p-3 w-[80%] max-w-[400px] border border-gray-300 rounded"
-          />
-          <button
-            onClick={() => handleLogin(idInput)}
-            className="my-3 ml-2 p-3 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
-          >
-            Login
-          </button>
-        </div>
-      )}
     </header>
   );
 };

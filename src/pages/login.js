@@ -1,28 +1,21 @@
-// /pages/register.js
+// /pages/login.js
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { useUserDispatch } from '../app/components/UserContext';
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const router = useRouter();
+  const dispatch = useUserDispatch();
 
-  const handleRegister = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
-
-    // Verifica si las contraseñas coinciden
-    if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
-      return;
-    }
 
     try {
-      const response = await fetch('/api/register', {
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,23 +25,22 @@ export default function RegisterPage() {
 
       const data = await response.json();
       if (data.success) {
-        setSuccess('Registro exitoso. Redirigiendo al login...');
-        setTimeout(() => {
-          router.push('/login'); // Redirige a la página de login
-        }, 2000);
+        // Enviar tanto username como role en el payload
+        dispatch({ type: 'LOGIN', payload: { username: data.username, role: data.role } });
+        router.push('/');
       } else {
         setError(data.message);
       }
     } catch (error) {
-      console.error('Error en el registro:', error);
+      console.error('Error en el login:', error);
       setError('Error en el servidor. Inténtalo de nuevo más tarde.');
     }
   };
 
   return (
     <div style={{ maxWidth: '300px', margin: '0 auto' }}>
-      <h2>Registro de Usuario</h2>
-      <form onSubmit={handleRegister}>
+      <h2>Iniciar Sesión</h2>
+      <form onSubmit={handleLogin}>
         <div>
           <label>Usuario:</label>
           <input
@@ -67,18 +59,8 @@ export default function RegisterPage() {
             required
           />
         </div>
-        <div>
-          <label>Confirmar Contraseña:</label>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-        </div>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        {success && <p style={{ color: 'green' }}>{success}</p>}
-        <button type="submit">Registrarse</button>
+        <button type="submit">Iniciar Sesión</button>
       </form>
     </div>
   );

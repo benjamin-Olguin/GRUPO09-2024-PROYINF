@@ -1,32 +1,13 @@
-"use client";  // Add this line to specify it's a Client Component
+"use client";
 
 import React, { useState } from 'react';
-import './globals.css';  // Assuming you're using this for global styles.
-import Header from './components/header';  // Importa tu nuevo componente Header
-import BoletinesPublicados from './components/boletinesPublicados';  // Importa el componente de Boletines
+import './globals.css';
+import Header from './components/header';
+import BoletinesPublicados from './components/boletinesPublicados';
 
 const LandingPage = () => {
-  // Definir los estados de isAdmin e isCollaborator
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCollaborator, setIsCollaborator] = useState(false);
-
-  const handleLogin = (idInput) => {
-    if (idInput === '1') {
-      setIsAdmin(true);
-      setIsCollaborator(false);
-      alert('Has iniciado sesión como administrador.');
-    } else if (idInput === '2') {
-      setIsAdmin(false);
-      setIsCollaborator(true);
-      alert('Has iniciado sesión como colaborador.');
-    } else {
-      alert('ID no válido. Por favor, intenta de nuevo.');
-    }
-  };
-
-  const handleSignUp = () => {
-    alert('Redirigiendo a la página de registro.');
-  };
 
   const handleBoletin = () => {
     alert('El boletín se generará pronto.');
@@ -34,12 +15,13 @@ const LandingPage = () => {
 
   return (
     <div>
-      {/* Pasa la función handleLogin como prop */}
-      <Header handleLogin={handleLogin} />
+      {/* Encabezado con opciones de navegación */}
+      <Header />
 
       {/* Otras secciones de la página */}
       <BoletinesPublicados />
 
+      {/* Panel del Administrador */}
       {isAdmin && (
         <div className="mt-5 bg-white bg-opacity-80 p-5 rounded-lg">
           <h2>Panel de Administrador</h2>
@@ -66,12 +48,14 @@ const LandingPage = () => {
         </div>
       )}
 
+      {/* Panel del Colaborador */}
       {isCollaborator && (
         <div className="mt-5 bg-white bg-opacity-80 p-5 rounded-lg">
           <h2>Boletines en los que puedes colaborar</h2>
           <p>No hay boletines disponibles para colaboración en este momento.</p>
         </div>
       )}
+
 
       <footer className="mt-5">
         <a
@@ -80,7 +64,7 @@ const LandingPage = () => {
           rel="noopener noreferrer"
           className="text-black font-bold underline"
         >
-          Dirigete a la pagina de FIA
+          Dirígete a la página de FIA
         </a>
       </footer>
     </div>
