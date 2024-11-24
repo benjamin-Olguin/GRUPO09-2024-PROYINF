@@ -27,10 +27,12 @@ export default async function handler(req, res) {
     // Hashea la contraseña antes de almacenarla
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const defaultRole = 'user';
+    
     // Inserta el nuevo usuario en la base de datos
     await pool.query(
-      'INSERT INTO users (username, password) VALUES ($1, $2)',
-      [username, hashedPassword]
+      'INSERT INTO users (username, password, rol) VALUES ($1, $2, $3)',
+      [username, hashedPassword, defaultrole]
     );
 
     res.status(201).json({ success: true, message: 'User registered successfully' });
