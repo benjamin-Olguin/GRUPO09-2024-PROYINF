@@ -27,7 +27,7 @@ const Header = () => {
           {user ? (
             <>
               <span className="text-gray-800 font-bold">
-                Rol: {user.role} - {user.username}
+                Usuario: {user?.username} | Rol: {user?.role}
               </span>
               <button
                 onClick={handleLogout}
