@@ -1,6 +1,6 @@
 // /pages/api/register.js
 import bcrypt from 'bcrypt';
-import { pool } from 'pg';
+import { Pool } from 'pg';
 
 const pool = new Pool({
   user: process.env.DB_USERNAME,
