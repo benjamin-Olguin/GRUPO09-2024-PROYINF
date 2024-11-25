@@ -2,25 +2,43 @@ import { useEffect, useState } from "react";
 
 export default function GestionarArticulos() {
   const [plantillas, setPlantillas] = useState([]);
+  const [pdfNames, setPdfNames] = useState({});
   const [selectedPlantilla, setSelectedPlantilla] = useState(null);
-  const [newContent, setNewContent] = useState("");
+  const [editContent, setEditContent] = useState("");
 
   useEffect(() => {
     // Cargar las plantillas disponibles
     fetch("/api/plantillas")
       .then((res) => res.json())
-      .then((data) => setPlantillas(data))
+      .then((data) => {
+        setPlantillas(data);
+        const initialPdfNames = {};
+        data.forEach((plantilla) => {
+          initialPdfNames[plantilla.name] = ""; // Inicializar los nombres de PDFs
+        });
+        setPdfNames(initialPdfNames);
+      })
       .catch((error) => console.error("Error al cargar plantillas:", error));
   }, []);
 
-  const handleConvertToPDF = async (txtFileName) => {
+  const handlePdfNameChange = (name, value) => {
+    setPdfNames((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleGeneratePDF = async (txtFileName) => {
+    const pdfName = pdfNames[txtFileName];
+    if (!pdfName) {
+      alert("Por favor, escribe un nombre para el PDF.");
+      return;
+    }
+
     try {
       const response = await fetch("/api/generarPDF", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ txtFileName }),
+        body: JSON.stringify({ txtFileName, pdfName }),
       });
 
       if (response.ok) {
@@ -36,56 +54,76 @@ export default function GestionarArticulos() {
     }
   };
 
-  const handleSave = async () => {
-    // Guardar cambios en la plantilla
-    if (selectedPlantilla) {
-      const response = await fetch("/api/plantillas", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: selectedPlantilla.name, content: newContent }),
-      });
+  const handleEdit = (plantilla) => {
+    setSelectedPlantilla(plantilla);
+    setEditContent(plantilla.content); // Inicializar el contenido editable
+  };
 
-      if (response.ok) {
-        alert("Plantilla actualizada.");
-        setSelectedPlantilla(null);
-        setNewContent("");
-        fetch("/api/plantillas") // Refrescar lista de plantillas
-          .then((res) => res.json())
-          .then((data) => setPlantillas(data));
-      } else {
-        alert("Error actualizando la plantilla.");
+  const handleSave = async () => {
+    if (selectedPlantilla) {
+      try {
+        const response = await fetch("/api/plantillas", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: selectedPlantilla.name, content: editContent }),
+        });
+
+        if (response.ok) {
+          alert("Plantilla actualizada con éxito.");
+          setSelectedPlantilla(null);
+          setEditContent("");
+          fetch("/api/plantillas") // Refrescar lista de plantillas
+            .then((res) => res.json())
+            .then((data) => setPlantillas(data));
+        } else {
+          alert("Error al guardar la plantilla.");
+        }
+      } catch (error) {
+        console.error("Error al guardar la plantilla:", error);
+        alert("Error al guardar la plantilla.");
       }
     }
   };
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4 text-center">Gestión de Plantillas</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">Gestión de Artículos</h1>
       {plantillas.length === 0 ? (
         <p className="text-center text-gray-500">No hay plantillas disponibles.</p>
       ) : (
-        <ul className="mb-4 space-y-4">
+        <ul className="space-y-4">
           {plantillas.map((plantilla) => (
             <li
               key={plantilla.name}
-              className="flex justify-between items-center border p-4 rounded shadow-md"
+              className="bg-white p-4 rounded shadow-md border space-y-2"
             >
-              <span className="font-medium">{plantilla.name}</span>
+              <a
+                href={`/plantillas/${plantilla.name}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 underline font-medium block"
+              >
+                {plantilla.name}
+              </a>
+              <input
+                type="text"
+                placeholder="Nombre del PDF"
+                value={pdfNames[plantilla.name] || ""}
+                onChange={(e) => handlePdfNameChange(plantilla.name, e.target.value)}
+                className="w-full p-2 border rounded"
+              />
               <div className="flex space-x-2">
                 <button
-                  onClick={() => {
-                    setSelectedPlantilla(plantilla);
-                    setNewContent(plantilla.content);
-                  }}
+                  onClick={() => handleGeneratePDF(plantilla.name)}
+                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Generar PDF
+                </button>
+                <button
+                  onClick={() => handleEdit(plantilla)}
                   className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
                 >
                   Editar
-                </button>
-                <button
-                  onClick={() => handleConvertToPDF(plantilla.name)}
-                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Convertir a PDF
                 </button>
               </div>
             </li>
@@ -93,16 +131,18 @@ export default function GestionarArticulos() {
         </ul>
       )}
       {selectedPlantilla && (
-        <div>
-          <h2 className="text-xl font-bold mb-2">Editando: {selectedPlantilla.name}</h2>
+        <div className="mt-6 bg-gray-100 p-4 rounded shadow-md">
+          <h2 className="text-xl font-bold mb-2">
+            Editando: {selectedPlantilla.name}
+          </h2>
           <textarea
-            value={newContent}
-            onChange={(e) => setNewContent(e.target.value)}
+            value={editContent}
+            onChange={(e) => setEditContent(e.target.value)}
             className="w-full h-40 p-2 border rounded mb-4"
           />
           <button
             onClick={handleSave}
-            className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           >
             Guardar Cambios
           </button>
