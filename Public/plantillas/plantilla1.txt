@@ -1,0 +1,6 @@
+#Titulo#: Mi Documento Importante
+#Subtitulo1#: Introducción
+#parrafo1#:aaaaaaaaaaaaaab
+#parrafo2#: sssssssssss
+#Subtitulo2#: Conclusión
+#parrafo3#: Este es el primer párrafo de la conclusión.

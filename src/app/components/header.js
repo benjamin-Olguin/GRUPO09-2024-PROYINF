@@ -7,13 +7,6 @@ import Link from 'next/link';
 const Header = () => {
   const { user, logout } = useUser();
 
-  const handleLogout = () => {
-    const confirmLogout = confirm('¿Estás seguro de que quieres cerrar sesión?');
-    if (confirmLogout) {
-      logout();
-    }
-  };
-  
   return (
     <header className="flex flex-col justify-between items-center bg-white bg-opacity-80 p-4">
       <div className="flex justify-between w-full items-center">
@@ -27,10 +20,15 @@ const Header = () => {
           {user ? (
             <>
               <span className="text-gray-800 font-bold">
-                Usuario: {user?.username} | Rol: {user?.role}
+                Rol: {user.role} - {user.username}
               </span>
+              <Link href="/gestionarPDFs">
+                <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                  Gestionar PDFs
+                </button>
+              </Link>
               <button
-                onClick={handleLogout}
+                onClick={logout}
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
               >
                 Cerrar Sesión
@@ -38,6 +36,11 @@ const Header = () => {
             </>
           ) : (
             <>
+              <Link href="/gestionarPDFs">
+                <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                  Gestionar PDFs
+                </button>
+              </Link>
               <Link href="/login">
                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                   Iniciar Sesión
@@ -57,3 +60,13 @@ const Header = () => {
 };
 
 export default Header;
+
+// Si deseas que el botón "Gestionar PDFs" sea visible solo para administradores,
+// envuelve el enlace en un condicional como este:
+// {user.role === 'admin' && (
+//   <Link href="/gestionarPDFs">
+//     <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+//       Gestionar PDFs
+//     </button>
+//   </Link>
+// )}
