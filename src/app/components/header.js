@@ -29,6 +29,11 @@ const Header = () => {
               <span className="text-gray-800 font-bold">
                 Rol: {user.role} - {user.username}
               </span>
+              <Link href="/perfil">
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Mi Perfil
+                </button>
+              </Link>
               <Link href="/gestionarPDFs">
                 <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
                   Gestionar PDFs
