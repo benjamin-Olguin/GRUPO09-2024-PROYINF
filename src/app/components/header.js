@@ -1,72 +1,69 @@
-// app/components/header.js
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useUser } from './UserContext';
 import Link from 'next/link';
 
 const Header = () => {
-  const { user, logout } = useUser();
+    const { user, logout } = useUser();
+    const [boletines, setBoletines] = useState([]);
 
-  return (
-    <header className="flex flex-col justify-between items-center bg-white bg-opacity-80 p-4">
-      <div className="flex justify-between w-full items-center">
-        <img
-          src="https://www.fia.cl/wp-content/uploads/2021/11/logo_fia.svg"
-          alt="Logo del Ministerio"
-          className="max-w-[150px]"
-        />
-        <h1 className="flex-grow text-center text-4xl font-bold">VIGIFIA</h1>
-        <div className="space-x-4">
-          {user ? (
-            <>
-              <span className="text-gray-800 font-bold">
-                Rol: {user.role} - {user.username}
-              </span>
-              <Link href="/gestionarPDFs">
-                <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-                  Gestionar PDFs
-                </button>
-              </Link>
-              <button
-                onClick={logout}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Cerrar Sesión
-              </button>
-            </>
-          ) : (
-            <>
-              <Link href="/gestionarPDFs">
-                <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-                  Gestionar PDFs
-                </button>
-              </Link>
-              <Link href="/login">
-                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                  Iniciar Sesión
-                </button>
-              </Link>
-              <Link href="/register">
-                <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                  Registrarse
-                </button>
-              </Link>
-            </>
-          )}
-        </div>
-      </div>
-    </header>
-  );
+    useEffect(() => {
+        fetch("/api/boletines")
+            .then((res) => res.json())
+            .then((data) => {
+                setBoletines(Array.isArray(data) ? data : []);
+            })
+            .catch((error) => console.error("Error al cargar boletines:", error));
+    }, []);
+
+    return (
+        <header className="flex flex-col justify-between items-center bg-white bg-opacity-80 p-4">
+            <div className="flex justify-between w-full items-center">
+                <img
+                    src="https://www.fia.cl/wp-content/uploads/2021/11/logo_fia.svg"
+                    alt="Logo del Ministerio"
+                    className="max-w-[150px]"
+                />
+                <h1 className="flex-grow text-center text-4xl font-bold">VIGIFIA</h1>
+                <div className="space-x-4">
+                    {user ? (
+                        <>
+                            <span className="text-gray-800 font-bold">
+                                Rol: {user.role} - {user.username}
+                            </span>
+                            {user.role === 'admin' && (
+                                <Link href="/gestionarPDFs">
+                                    <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                                        Gestionar PDFs
+                                    </button>
+                                </Link>
+                            )}
+                            <button
+                                onClick={logout}
+                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                            >
+                                Cerrar Sesión
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link href="/login">
+                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    Iniciar Sesión
+                                </button>
+                            </Link>
+                            <Link href="/register">
+                                <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                    Registrarse
+                                </button>
+                            </Link>
+                        </>
+                    )}
+                </div>
+            </div>
+        </header>
+    );
 };
 
 export default Header;
-
-// Si deseas que el botón "Gestionar PDFs" sea visible solo para administradores,
-// envuelve el enlace en un condicional como este:
-// {user.role === 'admin' && (
-//   <Link href="/gestionarPDFs">
-//     <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-//       Gestionar PDFs
-//     </button>
-//   </Link>
-// )}
