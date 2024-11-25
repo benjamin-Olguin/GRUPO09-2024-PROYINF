@@ -1,4 +1,3 @@
-// app/components/header.js
 'use client';
 
 import { useUser } from './UserContext';
@@ -22,13 +21,24 @@ const Header = () => {
           alt="Logo del Ministerio"
           className="max-w-[150px]"
         />
-        <h1 className="flex-grow text-center text-4xl font-bold">VIGIFIA</h1>
+        <Link href="/">
+          <h1 className="flex-grow text-center text-4xl font-bold cursor-pointer">
+            VIGIFIA
+          </h1>
+        </Link>
         <div className="space-x-4">
           {user ? (
             <>
               <span className="text-gray-800 font-bold">
                 Rol: {user.role} - {user.username}
               </span>
+              {user.role === 'admin' && (
+                <Link href="/usuarios">
+                  <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Usuarios
+                  </button>
+                </Link>
+              )}
               <Link href="/gestionarPDFs">
                 <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
                   Gestionar PDFs
@@ -67,13 +77,3 @@ const Header = () => {
 };
 
 export default Header;
-
-// Si deseas que el botón "Gestionar PDFs" sea visible solo para administradores,
-// envuelve el enlace en un condicional como este:
-// {user.role === 'admin' && (
-//   <Link href="/gestionarPDFs">
-//     <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-//       Gestionar PDFs
-//     </button>
-//   </Link>
-// )}

@@ -1,3 +1,4 @@
+// src/pages/api/register.js
 import supabase from '../../../config/supaBaseClient';
 import bcrypt from 'bcrypt';
 
