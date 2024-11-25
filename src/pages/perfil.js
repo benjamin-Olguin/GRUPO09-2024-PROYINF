@@ -1,4 +1,5 @@
 import { useUser } from "../app/components/UserContext";
+import Link from "next/link";
 
 export default function Perfil() {
   const { user } = useUser();
