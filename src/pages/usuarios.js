@@ -21,7 +21,7 @@ export default function UsuariosPage() {
             const data = await response.json();
 
             if (data.success) {
-              setUsuarios(data.users); // Asegúrate de que cada usuario tenga un campo `role`
+              setUsuarios(data.users);
             } else {
               setError(data.message);
             }
@@ -68,7 +68,7 @@ export default function UsuariosPage() {
                   {usuario.username}
                 </td>
                 <td style={{ border: '1px solid #ddd', padding: '8px', backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
-                  {usuario.role}
+                  {usuario.rol}
                 </td>
               </tr>
             ))}

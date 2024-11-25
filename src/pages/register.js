@@ -1,4 +1,3 @@
-// /pages/register.js
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
@@ -22,6 +21,7 @@ export default function RegisterPage() {
     }
 
     try {
+      // Envía los datos del usuario a la API de registro
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
@@ -31,13 +31,14 @@ export default function RegisterPage() {
       });
 
       const data = await response.json();
-      if (data.success) {
+
+      if (response.ok) {
         setSuccess('Registro exitoso. Redirigiendo al login...');
         setTimeout(() => {
           router.push('/login'); // Redirige a la página de login
         }, 2000);
       } else {
-        setError(data.message);
+        setError(data.message || 'Error al registrar el usuario');
       }
     } catch (error) {
       console.error('Error en el registro:', error);
