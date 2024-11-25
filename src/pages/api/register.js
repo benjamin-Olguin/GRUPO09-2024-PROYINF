@@ -1,14 +1,5 @@
-// /pages/api/register.js
+import supabase from '../../../config/supaBaseClient';
 import bcrypt from 'bcrypt';
-import { Pool } from 'pg';
-
-const pool = new Pool({
-  user: process.env.DB_USERNAME,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-});
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -18,26 +9,55 @@ export default async function handler(req, res) {
   const { username, password } = req.body;
 
   try {
-    // Verifica si el nombre de usuario ya existe
-    const userCheck = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-    if (userCheck.rows.length > 0) {
+    // Verifica si el nombre de usuario ya existe en Supabase
+    const { data: existingUser, error: userCheckError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('username', username)
+      .single();
+
+    if (userCheckError && userCheckError.code !== 'PGRST116') {
+      // Maneja errores diferentes a "no encontrado"
+      return res.status(500).json({ 
+        success: false, 
+        message: 'Error checking user', 
+        details: userCheckError.message 
+      });
+    }
+
+    if (existingUser) {
       return res.status(400).json({ success: false, message: 'Username already exists' });
     }
 
     // Hashea la contraseña antes de almacenarla
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const defaultRole = 'user';
-    
-    // Inserta el nuevo usuario en la base de datos
-    await pool.query(
-      'INSERT INTO users (username, password, rol) VALUES ($1, $2, $3)',
-      [username, hashedPassword, defaultrole]
-    );
+
+    // Inserta el nuevo usuario en Supabase
+    const { data, error } = await supabase.from('users').insert([
+      {
+        username: username,
+        password: hashedPassword, // Se almacena la contraseña hasheada
+        rol: 'user', // Asigna un rol predeterminado, si corresponde
+      },
+    ]);
+
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        message: 'Error creating user',
+        details: error.message,
+      });
+    }
+
 
     res.status(201).json({ success: true, message: 'User registered successfully' });
   } catch (error) {
     console.error('Error en la API de registro:', error);
-    res.status(500).json({ success: false, message: 'Internal server error', details: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      details: error.message,
+    });
   }
 }

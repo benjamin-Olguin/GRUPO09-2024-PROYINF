@@ -1,4 +1,3 @@
-// /pages/login.js
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useUserDispatch } from '../app/components/UserContext';
@@ -27,9 +26,9 @@ export default function LoginPage() {
       if (data.success) {
         // Enviar tanto username como role en el payload
         dispatch({ type: 'LOGIN', payload: { username: data.username, role: data.role } });
-        router.push('/');
+        router.push('/'); // Redirige al inicio después del login
       } else {
-        setError(data.message);
+        setError(data.message || 'Invalid credentials');
       }
     } catch (error) {
       console.error('Error en el login:', error);
