@@ -16,7 +16,7 @@ puede acceder a la wiki mediante el siguiente [Enlace](https://github.com/benjam
 * [Video prototipo 1](https://youtu.be/VV1N4mpY6w8)
 
 
-## Documentacion
+## Requerimientos de ejecucion
 Para ejecutar nuestro proyecto en su entorno local, hay que seguir los siguientes pasos:
 
 1. Instalar Node.js
