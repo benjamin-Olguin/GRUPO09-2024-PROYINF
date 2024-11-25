@@ -7,6 +7,13 @@ import Link from 'next/link';
 const Header = () => {
   const { user, logout } = useUser();
 
+  const handleLogout = () => {
+    const confirmLogout = confirm('¿Estás seguro de que quieres cerrar sesión?');
+    if (confirmLogout) {
+      logout();
+    }
+  };
+  
   return (
     <header className="flex flex-col justify-between items-center bg-white bg-opacity-80 p-4">
       <div className="flex justify-between w-full items-center">
@@ -20,10 +27,10 @@ const Header = () => {
           {user ? (
             <>
               <span className="text-gray-800 font-bold">
-                Rol: {user.role} - {user.username}
+                Usuario: {user?.username} | Rol: {user?.role}
               </span>
               <button
-                onClick={logout}
+                onClick={handleLogout}
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
               >
                 Cerrar Sesión

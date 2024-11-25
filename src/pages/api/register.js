@@ -32,6 +32,7 @@ export default async function handler(req, res) {
     // Hashea la contraseña antes de almacenarla
     const hashedPassword = await bcrypt.hash(password, 10);
 
+
     // Inserta el nuevo usuario en Supabase
     const { data, error } = await supabase.from('users').insert([
       {
@@ -48,6 +49,7 @@ export default async function handler(req, res) {
         details: error.message,
       });
     }
+
 
     res.status(201).json({ success: true, message: 'User registered successfully' });
   } catch (error) {
