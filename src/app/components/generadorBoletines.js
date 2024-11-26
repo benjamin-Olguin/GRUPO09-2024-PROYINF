@@ -33,8 +33,8 @@ const GeneradorBoletines = () => {
         }
         
         // Aquí puedes manejar el envío de los datos, por ejemplo, a una API o al backend.
-        alert(`Boletín generado para la región: ${region}\nContenido: ${contenido}`);
-        setMensaje('Boletín enviado para revisión.');
+        alert(`Solicitud generada para la región: ${region}\nContenido: ${contenido}`);
+        setMensaje('Solicitud enviado para generación de Boletín.');
         setRegion('');
         setContenido('');
     };
